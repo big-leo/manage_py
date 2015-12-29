@@ -11,6 +11,15 @@ def local_list_files(dir):
             result = result + local_list_files(dir + "/" + file)
     return result
 
+def del_root_path(files):
+    result = []
+    if (len(files) > 0):
+        root_dir = files[0].split("/")[0]
+        print("root_dir: " + root_dir)
+    for file in files:
+        result.append(file[len(root_dir)+1:])
+    return result
+
 def remote_list_files(dir):
     """func for create list files on remote server for check"""
     result_list = []
