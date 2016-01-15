@@ -13,6 +13,9 @@ from config import *
 def get_status():
     pass
 
+def print_help():
+    print('full input parameter')
+
 def read_argv(argv):
     """
     function for read input parameter
@@ -20,11 +23,15 @@ def read_argv(argv):
     try:
         if (argv[1] == 'status'):
             get_status()
-        if (argv[1] == 'del'):
+        elif (argv[1] == 'check'):
+            if (argv[2] == 'host'):
+                if (is_ip_addr(argv[3])):
+                    check_host(argv[3])
+        elif (argv[1] == 'del'):
             if (argv[2] == 'host'):
                 if (is_ip_addr(argv[3])):
                     del_host(argv[3])
-        if (argv[1] == 'add'):
+        elif (argv[1] == 'add'):
             if (argv[2] == 'ftp'):
                 if (is_ip_addr(argv[3])):
                     add_ftp(argv[3])
@@ -38,11 +45,19 @@ def read_argv(argv):
                 add_user(argv[3])
             if (argv[2] == 'password'):
                 add_password(argv[3])
+        else:
+            print_help()
     except IndexError:
-        print('full input parameter')
+        print_help()
 
 if __name__ == "__main__":
     read_argv(sys.argv)
+    add_user('uusseerr')
+    add_ssh('192.168.1.2')
+    add_smb('127.0.0.1')
+    add_user('abrakadabra')
+    for host in hosts.get_hosts():
+        print(host)
     """
     if (len(sys.argv) > 2 and os.path.isdir(sys.argv[1]) and os.path.isdir(sys.argv[2])):
         path1 = sys.argv[1]

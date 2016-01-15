@@ -10,3 +10,9 @@ class remote(object):
 
     def connect(self):
         print('you must define this method in child class')
+
+    def check_host(host):
+        """
+        func for check correct host
+        """
+        print('you must define this method in child class')
