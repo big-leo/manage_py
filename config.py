@@ -1,39 +1,53 @@
 import configparser
+import os
+
+def init_setup():
+    os.system('mkdir -p setup')
+
+def add_local_path(path):
+    hosts.local_path = path
 
 def add_ftp(host):
     hosts(host, 'ftp')
-    print('added ftp', host)
+    #print('added ftp', host)
 
 def add_ssh(host):
     hosts(host, 'ssh')
-    print('added ssh', host)
+    #print('added ssh', host)
 
 def add_smb(host):
     hosts(host, 'smb')
-    print('added smb', host)
+    #print('added smb', host)
 
 def del_host(host):
     hosts.del_host(host)
-    print('deleted host', host)
+    #print('deleted host', host)
 
 def add_user(user):
     hosts.set_user(user)
-    print('added user', user)
+    #print('added user', user)
 
 def add_password(password):
     hosts.set_password(password)
-    print('added password')
+    #print('added password')
 
 def add_path(path):
     hosts.set_path(path)
-    print('added path', path)
+    #print('added path', path)
 
 def check_host(host):
     print('check host', host)
 
 def load_cfg():
     config = configparser.ConfigParser()
-    config.read('setup/config.ini')
+    config.read('setup/local.ini')
+    for section in config.sections():
+        for key in config[section]:
+            if key == 'local_path':
+                add_local_path(config[section][key])
+
+    config = configparser.ConfigParser()
+    config.read('setup/hosts.ini')
     for section in config.sections():
         if config[section]['type'] == 'ftp':
             add_ftp(section)
@@ -50,9 +64,16 @@ def load_cfg():
                 add_password(config[section][key])
             if key == 'path':
                 add_path(config[section][key])
-    print('load from config file')
+    #print('load from config file')
 
 def save_cfg():
+    config = configparser.ConfigParser()
+    dic = {}
+    if hosts.local_path != None:
+        dic['local_path'] = hosts.local_path
+    config['local'] = dic
+    with open('setup/local.ini', 'w') as configfile:
+        config.write(configfile)
     config = configparser.ConfigParser()
     for host in hosts.get_hosts():
         dic = {}
@@ -65,9 +86,9 @@ def save_cfg():
         if host.path != None:
             dic['path'] = str(host.path)
         config[host.addr] = dic
-    with open('setup/config.ini', 'w') as configfile:
+    with open('setup/hosts.ini', 'w') as configfile:
         config.write(configfile)
-    print('save to config file')
+    #print('save to config file')
 
 class hosts(object):
     """
@@ -75,6 +96,7 @@ class hosts(object):
     """
 
     list_hosts = []
+    local_path = None
 
     def __init__(self, addr, type_host):
         self.addr = addr
@@ -102,19 +124,19 @@ class hosts(object):
     @staticmethod
     def set_user(user):
         for host in hosts.get_hosts():
-            if ((host.user == None) or (host.user == 'None')):
+            if (host.user == None):
                 host.user = user
 
     @staticmethod
     def set_password(password):
         for host in hosts.get_hosts():
-            if ((host.password == None) or (host.password == 'None')):
+            if (host.password == None):
                 host.password = password
 
     @staticmethod
     def set_path(path):
         for host in hosts.get_hosts():
-            if ((host.path == None) or (host.path == 'None')):
+            if (host.path == None):
                 host.path = path
 
     @staticmethod
